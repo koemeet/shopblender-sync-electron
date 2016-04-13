@@ -1,0 +1,49 @@
+{{#paper-toolbar}}
+  <div class="md-toolbar-tools">
+    {{#paper-button action=(action "invalidateSession")}}Logout{{/paper-button}}
+    {{#paper-button}}New theme{{/paper-button}}
+  </div>
+{{/paper-toolbar}}
+
+{{#paper-card}}
+    {{#paper-card-content}}
+        Hello, <strong>{{session.user.username}}</strong>!
+        <p>To start working on one of your themes, select one below.</p>
+
+        {{#paper-select placeholder="Active theme" model=theme item-label-callback=(action "themeLabel")}}
+            {{#each themes as |theme|}}
+                {{#paper-option value=theme}}
+                    {{theme.name}}
+                {{/paper-option}}
+            {{/each}}
+        {{/paper-select}}
+    {{/paper-card-content}}
+{{/paper-card}}
+
+<img src={{image}}>
+
+{{#if theme}}
+    {{#paper-card}}
+        {{#paper-card-content}}
+            <h2>{{theme.name}}</h2>
+            Theme parents:
+            <ul>
+                {{#each theme.parents as |theme|}}
+                  <li>
+                      <span>{{theme.name}}</span>
+                  </li>
+                {{/each}}
+            </ul>
+
+            <form {{action "watchTheme" theme on="submit"}}>
+                {{paper-input label="Local path to theme files, e.g. /Users/steffen/my-theme" value=theme.localPath}}
+                {{#paper-button type="submit" primary=true disabled=isWatching}}Start watching{{/paper-button}}
+                {{#paper-button warn=true disabled=(not isWatching) action=(action "stopWatching")}}Stop watching{{/paper-button}}
+            </form>
+
+            {{#if error}}
+                <p>{{error}}</p>
+            {{/if}}
+        {{/paper-card-content}}
+    {{/paper-card}}
+{{/if}}

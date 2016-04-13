@@ -5,7 +5,7 @@ module.exports = function(environment) {
     modulePrefix: 'shopblender-sync',
     environment: environment,
     baseURL: '/',
-    locationType: 'auto',
+    locationType: 'hash',
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
@@ -16,7 +16,17 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+      API: {
+          host: null,
+          tokenEndpoint: '/oauth/v2/token',
+          clientId: 'dev',
+          clientSecret: 'dev'
+      }
     }
+  };
+
+  ENV['ember-simple-auth'] = {
+      authenticationRoute: 'login'
   };
 
   if (environment === 'development') {
@@ -25,6 +35,7 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
+    ENV.APP.API.host = 'shopblender.dev';
   }
 
   if (environment === 'test') {
@@ -40,7 +51,10 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
+  }
 
+  if (ENV.APP.API.host) {
+      ENV.APP.API.tokenEndpoint = 'http://' + ENV.APP.API.host + ENV.APP.API.tokenEndpoint;
   }
 
   return ENV;

@@ -1,0 +1,10 @@
+<form {{action 'authenticate' on='submit'}}>
+    {{paper-input label="E-mail" type="email" value=identification}}
+    {{paper-input label="Password" type="password" value=password}}
+    <p>
+        {{#paper-button type="submit" raised=true primary=true}}Log in{{/paper-button}}
+    </p>
+    {{#if errorMessage}}
+        <p>{{errorMessage}}</p>
+    {{/if}}
+</form>
