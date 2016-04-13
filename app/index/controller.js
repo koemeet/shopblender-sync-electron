@@ -53,7 +53,7 @@ export default Ember.Controller.extend({
     startWatcher(path) {
         try {
             this.set('watcher', new sane(path, {
-                glob: ['templates/**/*.html.twig', 'theme.yml', 'public/**']
+                glob: ['templates/**/*.html.twig', 'theme.yml', 'public/**/*.+(css|js|png|jpg|jpeg|gif)']
             }));
         } catch (e) {
             console.log(e);
@@ -79,6 +79,8 @@ export default Ember.Controller.extend({
     },
 
     fileChanged(filepath, root, stat) {
+        console.log('changed', filepath, root);
+
         let fullPath = root + '/' + filepath;
         let parts = filepath.split('/');
         let directory = parts.shift();
@@ -88,7 +90,17 @@ export default Ember.Controller.extend({
             fs.readFile(fullPath, 'utf8', (err, data) => {
                 run(() => {
                     this.get('theme').set('schema', data);
-                    this.get('theme').save();
+                    this.get('theme').save().then(() => {
+                        new Notification('Schema updated', {
+                            title: 'Schema updated',
+                            body: `Schema settings updated successfully!`
+                        });
+                    }).catch((e) => {
+                        new Notification('Whoops', {
+                            title: 'Whoops',
+                            body: `Could not save schema settings, it may be incorrect.`
+                        });
+                    });
                 });
             });
         }
@@ -115,7 +127,9 @@ export default Ember.Controller.extend({
                     }).then((assets) => {
                         let asset = assets.get('firstObject');
                         if (asset) {
-                            asset.set('file', this.get('fileObject').fromBuffer(data, relativePath, mime.lookup(relativePath)));
+                            if (data.length) {
+                                asset.set('file', this.get('fileObject').fromBuffer(data, relativePath, mime.lookup(relativePath)));
+                            }
                             asset.save();
                         }
                     });
@@ -125,6 +139,8 @@ export default Ember.Controller.extend({
     },
 
     fileAdded(filepath, root, stat) {
+        console.log('added', filepath, root);
+
         let fullPath = root + '/' + filepath;
         let parts = filepath.split('/');
         let directory = parts.shift();
@@ -151,8 +167,12 @@ export default Ember.Controller.extend({
                         providerName: 'theme_asset',
                         name: relativePath,
                         theme: this.get('theme'),
-                        file: this.get('fileObject').fromBuffer(data, relativePath, mime.lookup(relativePath))
                     });
+
+                    if (data.length) {
+                        asset.set('file', this.get('fileObject').fromBuffer(data, relativePath, mime.lookup(relativePath)));
+                    }
+
                     asset.save();
                 });
             break;
@@ -160,6 +180,8 @@ export default Ember.Controller.extend({
     },
 
     fileDeleted(filepath, root, stat) {
+        console.log('delete', filepath, root);
+
         let fullPath = root + '/' + filepath;
         let parts = filepath.split('/');
         let directory = parts.shift();
@@ -169,6 +191,22 @@ export default Ember.Controller.extend({
             case 'templates':
                 let template = this.findOrCreateTemplate(relativePath);
                 template.destroyRecord();
+            break;
+            case 'public':
+                this.get('store').query('media', {
+                    criteria: {
+                        name: relativePath
+                    }
+                }).then((assets) => {
+                    let asset = assets.get('firstObject');
+                    if (asset) {
+                        asset.destroyRecord().then(() => {
+                            new Notification('Asset deleted', {
+                                body: `${asset.get('name')} has been deleted.`
+                            });
+                        });
+                    }
+                });
             break;
         }
     },
