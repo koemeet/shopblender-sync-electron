@@ -51,7 +51,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-      ENV.APP.API.host = 'shopblender.dev';
+      ENV.APP.API.host = 'prod.shopblender.com';
   }
 
   if (ENV.APP.API.host) {

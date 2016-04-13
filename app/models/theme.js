@@ -11,6 +11,7 @@ export default DS.Model.extend({
     children: DS.hasMany('theme', { inverse: null }),
 
     name: DS.attr('string'),
+    title: DS.attr('string'),
 
     description: DS.attr('string'),
     createdAt: DS.attr('date'),

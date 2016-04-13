@@ -1,0 +1,23 @@
+{{#paper-card}}
+    {{#paper-card-content}}
+        {{paper-input label="Name" value=model.name}}
+        {{paper-input label="Title" value=model.title}}
+        {{paper-input label="Description" value=model.description}}
+
+        {{#paper-switch checked=showParents}}This theme inherits from a parent theme{{/paper-switch}}
+
+        {{#if showParents}}
+            <label>Parents</label>
+            {{#power-select-multiple options=parents selected=model.parents onchange=(action (mut model.parents)) as |theme|}}
+                {{log theme}}
+                {{theme.name}}
+            {{/power-select-multiple}}
+            <br>
+        {{/if}}
+
+        {{#paper-button action=(action "cancel") warn=true}}Cancel{{/paper-button}}
+        {{#paper-button action=(action "save") primary=true}}Save theme{{/paper-button}}
+    {{/paper-card-content}}
+{{/paper-card}}
+
+{{log model}}

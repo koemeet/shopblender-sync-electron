@@ -1,9 +1,11 @@
 {{#paper-toolbar}}
   <div class="md-toolbar-tools">
     {{#paper-button action=(action "invalidateSession")}}Logout{{/paper-button}}
-    {{#paper-button}}New theme{{/paper-button}}
+    {{#paper-button action=(action "newTheme")}}New theme{{/paper-button}}
   </div>
 {{/paper-toolbar}}
+
+{{outlet}}
 
 {{#paper-card}}
     {{#paper-card-content}}
