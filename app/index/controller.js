@@ -1,7 +1,4 @@
 import Ember from 'ember';
-const sane = require('sane');
-const fs = require('fs');
-const mime = require('mime-types');
 
 const { computed, run } = Ember;
 
@@ -32,9 +29,12 @@ export default Ember.Controller.extend({
         },
 
         watchTheme(theme) {
+            const fs = require('fs');
             this.stopWatcher();
 
-            theme.set('localPath', '/Users/steffen/Development/curesupport/theme');
+            if (!theme.get('localPath')) {
+                theme.set('localPath', '/Users/steffen/Development/curesupport/theme');
+            }
 
             fs.exists(theme.get('localPath') + '/theme.yml', (exists) => {
                 if (exists) {
@@ -51,6 +51,8 @@ export default Ember.Controller.extend({
     },
 
     startWatcher(path) {
+        const sane = require('sane');
+
         try {
             this.set('watcher', new sane(path, {
                 glob: ['templates/**/*.html.twig', 'theme.yml', 'public/**/*.+(css|js|png|jpg|jpeg|gif)']
@@ -79,6 +81,9 @@ export default Ember.Controller.extend({
     },
 
     fileChanged(filepath, root, stat) {
+        const fs = require('fs');
+        const mime = require('mime-types');
+
         console.log('changed', filepath, root);
 
         let fullPath = root + '/' + filepath;
@@ -139,6 +144,9 @@ export default Ember.Controller.extend({
     },
 
     fileAdded(filepath, root, stat) {
+        const fs = require('fs');
+        const mime = require('mime-types');
+
         console.log('added', filepath, root);
 
         let fullPath = root + '/' + filepath;
@@ -180,6 +188,9 @@ export default Ember.Controller.extend({
     },
 
     fileDeleted(filepath, root, stat) {
+        const fs = require('fs');
+        const mime = require('mime-types');
+
         console.log('delete', filepath, root);
 
         let fullPath = root + '/' + filepath;
