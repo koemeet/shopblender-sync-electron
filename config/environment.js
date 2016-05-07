@@ -51,7 +51,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-      ENV.APP.API.host = 'prod.shopblender.com';
+      ENV.APP.API.host = 'api.divinelabs.nl';
   }
 
   if (ENV.APP.API.host) {
